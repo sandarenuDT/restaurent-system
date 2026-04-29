@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StaffRole {
+  ADMIN
+  WAITER
+  KITCHEN
+}
+
+enum TableStatus {
+  EMPTY
+  OCCUPIED
+  WAITING
+  BILL_REQUESTED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  SERVED
+  BILLED
+}
+
+enum OrderItemStatus {
+  PENDING
+  PREPARING
+  READY
+  SERVED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  ONLINE
+}
+
+enum BillStatus {
+  PENDING
+  PAID
+}
+
+model Restaurant {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  phone     String
+  taxRate   Float    @default(0.1)
+  currency  String   @default("USD")
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Staff {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      StaffRole
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  orders    Order[]
+  sessions  Session[]
+}
+
+model RestaurantTable {
+  id        String      @id @default(uuid())
+  number    Int         @unique
+  capacity  Int
+  status    TableStatus @default(EMPTY)
+  qrCode    String
+  qrCodeUrl String
+  createdAt DateTime    @default(now())
+  orders    Order[]
+  sessions  Session[]
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String
+  sortOrder Int        @default(0)
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id          String      @id @default(uuid())
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  available   Boolean     @default(true)
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Session {
+  id         String          @id @default(uuid())
+  table      RestaurantTable @relation(fields: [tableId], references: [id])
+  tableId    String
+  waiter     Staff           @relation(fields: [waiterId], references: [id])
+  waiterId   String
+  isActive   Boolean         @default(true)
+  guestCount Int             @default(1)
+  startedAt  DateTime        @default(now())
+  endedAt    DateTime?
+  orders     Order[]
+  bills      Bill[]
+}
+
+model Order {
+  id        String          @id @default(uuid())
+  table     RestaurantTable @relation(fields: [tableId], references: [id])
+  tableId   String
+  waiter    Staff           @relation(fields: [waiterId], references: [id])
+  waiterId  String
+  session   Session         @relation(fields: [sessionId], references: [id])
+  sessionId String
+  status    OrderStatus     @default(PENDING)
+  notes     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  items     OrderItem[]
+  bill      Bill?
+}
+
+model OrderItem {
+  id                  String          @id @default(uuid())
+  order               Order           @relation(fields: [orderId], references: [id])
+  orderId             String
+  menuItem            MenuItem        @relation(fields: [menuItemId], references: [id])
+  menuItemId          String
+  name                String
+  quantity            Int
+  price               Float
+  specialInstructions String?
+  status              OrderItemStatus @default(PENDING)
+}
+
+model Bill {
+  id            String        @id @default(uuid())
+  order         Order         @relation(fields: [orderId], references: [id])
+  orderId       String        @unique
+  session       Session       @relation(fields: [sessionId], references: [id])
+  sessionId     String
+  subtotal      Float
+  taxAmount     Float
+  discount      Float         @default(0)
+  total         Float
+  paymentMethod PaymentMethod?
+  status        BillStatus    @default(PENDING)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+}
