@@ -1,28 +1,61 @@
-import { Navigate } from "react-router-dom";
+
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 
-export const ProtectedRoute = ({ children }) => {
-  const { user } = useAuth();
+// Role → home page
+const ROLE_HOME = {
+  admin:   "/admin",
+  waiter:  "/waiter",
+  kitchen: "/kitchen",
+};
 
+// ── Spinner ───────────────────────────────────────────────────────────────────
+const AuthLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-10 h-10 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin" />
+      <p className="text-sm text-gray-400">Loading...</p>
+    </div>
+  </div>
+);
+
+// ── ProtectedRoute ────────────────────────────────────────────────────────────
+// Usage: <ProtectedRoute roles={["admin"]}>  OR  <ProtectedRoute> (any role)
+// Combines auth check + role check in ONE component to avoid nested Navigate loops
+export const ProtectedRoute = ({ children, roles }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  // Always wait — never redirect while auth state is still being resolved
+  if (loading) return <AuthLoader />;
+
+  // Not logged in → go to login
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Wrong role → go to their correct home
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to={ROLE_HOME[user.role] || "/login"} replace />;
   }
 
   return children;
 };
 
-export const RoleRoute = ({ children, allowedRoles }) => {
-  const { user } = useAuth();
+// ── RoleRoute (kept for backward compat, just wraps ProtectedRoute) ───────────
+export const RoleRoute = ({ children, roles }) => (
+  <ProtectedRoute roles={roles}>{children}</ProtectedRoute>
+);
 
-  if (!allowedRoles.includes(user?.role)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-};
-
+// ── GuestRoute ────────────────────────────────────────────────────────────────
 export const GuestRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  return user ? <Navigate to="/" replace /> : children;
+  if (loading) return <AuthLoader />;
+
+  if (user) {
+    return <Navigate to={ROLE_HOME[user.role] || "/admin"} replace />;
+  }
+
+  return children;
 };

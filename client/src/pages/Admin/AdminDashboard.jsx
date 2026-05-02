@@ -95,7 +95,7 @@ export default function AdminDashboard() {
     else         setRefreshing(true);
     try {
       const [statsRes, ordersRes, tablesRes] = await Promise.all([
-        api.get("/admin/stats"),
+        api.get("/admin/dashboard"),
         api.get("/orders?limit=6"),
         api.get("/tables"),
       ]);

@@ -32,7 +32,8 @@ export default function StaffManager() {
   const load = async () => {
     try {
       const { data } = await getStaff();
-      setStaff(data.data || []);
+      console.log("Loaded staff:", data);
+      setStaff(data || []);
     } catch { toast.error("Failed to load staff."); }
     finally  { setLoading(false); }
   };
