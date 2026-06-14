@@ -8,9 +8,9 @@ import { PageSpinner } from "../../components/ui/Spinner.jsx";
 import { getStaff, createStaff, updateStaff, deleteStaff, toggleStaffActive, resetStaffPin } from "../../api/staffApi.js";
 
 const ROLES = [
-  { value: "admin",   label: "Admin",   desc: "Full access — manage everything",    color: "badge-purple" },
-  { value: "waiter",  label: "Waiter",  desc: "Tables, orders, billing",             color: "badge-blue"   },
-  { value: "kitchen", label: "Kitchen", desc: "Kitchen display, update order status", color: "badge-orange" },
+  { value: "ADMIN",   label: "Admin",   desc: "Full access — manage everything",    color: "badge-purple" },
+  { value: "WAITER",  label: "Waiter",  desc: "Tables, orders, billing",             color: "badge-blue"   },
+  { value: "KITCHEN", label: "Kitchen", desc: "Kitchen display, update order status", color: "badge-orange" },
 ];
 
 const EMPTY_FORM = { name: "", email: "", password: "", role: "waiter", pin: "" };
@@ -32,7 +32,7 @@ export default function StaffManager() {
   const load = async () => {
     try {
       const { data } = await getStaff();
-      console.log("Loaded staff:", data);
+      // console.log("Loaded staff:", staff);
       setStaff(data || []);
     } catch { toast.error("Failed to load staff."); }
     finally  { setLoading(false); }
@@ -106,6 +106,7 @@ export default function StaffManager() {
   };
 
   const filtered = staff.filter((s) => filterRole === "all" || s.role === filterRole);
+  // console.log("Filtered staff:", filtered);
 
   if (loading) return <AdminLayout title="Staff Manager"><PageSpinner /></AdminLayout>;
 
