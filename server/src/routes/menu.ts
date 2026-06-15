@@ -17,6 +17,8 @@ const items = await prisma.menuItem.findMany({ orderBy: [{ category: 'asc' }, { 
 // POST /api/menu/items — create with image
 router.post('/items', authenticate, requireRole('ADMIN'), upload.single('image'), async (req: Request, res: Response) => {
   try {
+     console.log('=== FILE ===', req.file);
+    console.log('=== BODY ===', req.body);
     const { name, description, category, price, prepTimeMinutes } = req.body;
     const tags = req.body.tags || {};
 
@@ -42,8 +44,8 @@ router.post('/items', authenticate, requireRole('ADMIN'), upload.single('image')
 
     res.status(201).json({ data: item });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to create item' });
+    console.error('=== ERROR ===', err);
+    res.status(500).json({ message: 'Failed to create item', error: String(err) });
   }
 });
 
