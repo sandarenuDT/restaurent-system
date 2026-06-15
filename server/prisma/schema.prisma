@@ -84,26 +84,27 @@ model RestaurantTable {
   sessions  Session[]
 }
 
-model Category {
-  id        String     @id @default(uuid())
-  name      String
-  sortOrder Int        @default(0)
-  items     MenuItem[]
-}
-
 model MenuItem {
-  id          String      @id @default(uuid())
-  categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [id])
-  name        String
-  description String?
-  price       Float
-  imageUrl    String?
-  available   Boolean     @default(true)
-  sortOrder   Int         @default(0)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
+  id              String      @id @default(uuid())
+  name            String
+  description     String?
+  category        String
+  price           Float
+  prepTimeMinutes Int         @default(15)
+  imageUrl        String?
+  isAvailable     Boolean     @default(true)
+  sortOrder       Int         @default(0)
+
+  isVegetarian    Boolean     @default(false)
+  isVegan         Boolean     @default(false)
+  isGlutenFree    Boolean     @default(false)
+  isSpicy         Boolean     @default(false)
+  isPopular       Boolean     @default(false)
+  isChefSpecial   Boolean     @default(false)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  orderItems      OrderItem[]
 }
 
 model Session {
