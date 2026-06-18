@@ -53,6 +53,7 @@ router.post('/items', authenticate, requireRole('ADMIN'), upload.single('image')
 router.patch('/items/:id', authenticate, requireRole('ADMIN'), upload.single('image'), async (req: Request, res: Response) => {
   try {
     const { name, description, category, price, prepTimeMinutes } = req.body;
+    //req.body is the object ====inside the { it is object detrutiring }
     const tags = req.body.tags || {};
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 

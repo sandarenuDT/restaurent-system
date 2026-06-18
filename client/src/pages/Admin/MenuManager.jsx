@@ -42,6 +42,9 @@ export default function MenuManager() {
   const load = async () => {
     try {
       const { data } = await getMenuItems();
+      //object desturture
+      //const data = {
+      // }
       setItems(data.data || []);
     } catch { toast.error("Failed to load menu items."); }
     finally  { setLoading(false); }
@@ -58,6 +61,7 @@ export default function MenuManager() {
 
   const openEdit = (item) => {
     setEditing(item);
+    console.log(item);
     setForm({
       name: item.name, description: item.description || "",
       category: item.category, price: item.price,
@@ -82,6 +86,7 @@ export default function MenuManager() {
   };
 
   const handleSave = async () => {
+    console.log(form);
     if (!form.name.trim()) { toast.error("Name is required."); return; }
     if (!form.price || isNaN(form.price)) { toast.error("Valid price is required."); return; }
     setSaving(true);
@@ -101,7 +106,7 @@ export default function MenuManager() {
       if (form.image) fd.append("image", form.image);
 
       if (editing) {
-        await updateMenuItem(editing._id, fd);
+        await updateMenuItem(editing.id, fd);
         toast.success("Item updated!");
       } else {
         await createMenuItem(fd);
@@ -129,8 +134,8 @@ export default function MenuManager() {
 
   const handleToggle = async (item) => {
     try {
-      await toggleAvailable(item._id, !item.isAvailable);
-      setItems((prev) => prev.map((i) => i._id === item._id ? { ...i, isAvailable: !i.isAvailable } : i));
+      await toggleAvailable(item.id, !item.isAvailable);
+      setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, isAvailable: !i.isAvailable } : i));
       toast.success(item.isAvailable ? "Item marked unavailable" : "Item marked available");
     } catch { toast.error("Failed to update availability."); }
   };
@@ -237,7 +242,7 @@ export default function MenuManager() {
                         className="p-2 rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors">
                         <Pencil size={15} />
                       </button>
-                      <button onClick={() => setDeleteId(item._id)}
+                      <button onClick={() => setDeleteId(item.id)}
                         className="p-2 rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors">
                         <Trash2 size={15} />
                       </button>
