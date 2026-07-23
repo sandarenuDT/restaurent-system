@@ -27,6 +27,7 @@ router.post('/', authenticate, requireRole('ADMIN'), async (req: AuthRequest, re
     });
     res.status(201).json(updated);
   } catch {
+    console.error('Error creating table');
     res.status(400).json({ error: 'Table number already exists' });
   }
 });
