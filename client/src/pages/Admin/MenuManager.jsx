@@ -193,7 +193,7 @@ export default function MenuManager() {
                   <td colSpan={6} className="text-center py-12 text-gray-400">No items found</td>
                 </tr>
               ) : filtered.map((item) => (
-                <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {item.image?.url ? (

@@ -1,4 +1,4 @@
-import { Router, Response } from 'express';
+import { Router, Response, response } from 'express';
 import prisma from '../config/db';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import { generateQRCode } from '../utils/qrGenerator';
@@ -8,6 +8,8 @@ const router = Router();
 // GET /api/tables
 router.get('/', authenticate, async (_req, res: Response) => {
   const tables = await prisma.restaurantTable.findMany({ orderBy: { number: 'asc' } });
+  console.log('cder',tables);
+  // console.log("Fetched tables:", response);
   res.json(tables);
 });
 

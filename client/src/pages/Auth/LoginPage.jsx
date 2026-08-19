@@ -588,7 +588,7 @@ login({ ...staffUser, role: staffUser.role.toLowerCase() }, data.accessToken);
           <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
             <p className="text-xs font-semibold text-gray-500 mb-2">Click to fill demo credentials</p>
             {[
-              { role: "Admin",   email: "admin@restaurant.com",   pass: "Admin@123"   },
+              { role: "Admin",   email: "admin@restaurant.com",   pass: "admin123"   },
               { role: "Waiter",  email: "waiter@restaurant.com",  pass: "Waiter@123"  },
               { role: "Kitchen", email: "kitchen@restaurant.com", pass: "Kitchen@123" },
             ].map(({ role, email, pass }) => (

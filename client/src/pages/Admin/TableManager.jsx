@@ -39,9 +39,11 @@ export default function TableManager() {
   const load = async () => {
     try {
       const { data } = await getTables();
-      setTables(data.data || []);
-    } catch {
-      toast.error("Failed to load tables.");
+      console.log("Fetched tables:", data);  // <-- add this back
+      setTables(data);
+    } catch (err) {
+    console.error("Load error:", err);   // <-- add this back
+    toast.error("Failed to load tables.");
     } finally {
       setLoading(false);
     }
@@ -145,12 +147,15 @@ export default function TableManager() {
         <PageSpinner />
       </AdminLayout>
     );
+    console.log("Tables array:", tables);
+
 
   const statusGroups = {
-    available: tables.filter((t) => t.status === "available").length,
-    occupied: tables.filter((t) => t.status === "occupied").length,
-    bill_requested: tables.filter((t) => t.status === "bill_requested").length,
+    empty: tables.filter((t) => t.status === "EMPTY").length,
+    occupied: tables.filter((t) => t.status === "OCCUPIED").length,
+    bill_requested: tables.filter((t) => t.status === "BILL_REQUESTED").length,
   };
+  console.log("Status groups:", statusGroups);
 
   return (
     <AdminLayout title="Table Manager">
@@ -159,7 +164,7 @@ export default function TableManager() {
         {[
           {
             label: "Available",
-            count: statusGroups.available,
+            count: statusGroups.empty,
             color: "text-emerald-600",
             bg: "bg-emerald-50",
           },
@@ -219,10 +224,11 @@ export default function TableManager() {
               <div className="space-y-1 mb-4 text-xs text-gray-500">
                 <p>👥 Capacity: {table.capacity}</p>
                 <p>
-                  📍{" "}
-                  {table.location.charAt(0).toUpperCase() +
-                    table.location.slice(1)}
-                </p>
+  📍{" "}
+  {table.location
+    ? table.location.charAt(0).toUpperCase() + table.location.slice(1)
+    : "Unspecified"}
+</p>
               </div>
 
               {/* QR preview */}
